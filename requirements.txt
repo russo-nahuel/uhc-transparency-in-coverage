@@ -1,0 +1,5 @@
+requests==2.34.2
+tqdm==4.67.3
+pyspark==4.1.2
+snowflake-connector-python==4.6.0
+pyarrow==24.0.0
