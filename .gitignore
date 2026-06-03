@@ -1,16 +1,19 @@
 # Data
 data/raw/
-data/stage/
+data/processed/
+*.csv
 
 # Python
 __pycache__/
 *.pyc
 .env
 
-#Data
-data/
+# Logs
 logs/
 
-#Local developing files
-0_config_examples
+# Jupyter
+.ipynb_checkpoints/
+
+# Local development
+0_config_examples/
 0_history/
