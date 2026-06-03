@@ -1,4 +1,5 @@
 {
+    "table_name": "in_network_rates",
     "source":"uhc_tic",
     "file_type": "in_network_rates",
     "filter_endswith": "_in-network-rates.json.gz",

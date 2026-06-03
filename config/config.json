@@ -1,8 +1,9 @@
 {
+    "table_name": "index_files",
     "source": "uhc_tic",
     "file_type": "index",
     "filter_endswith": "_index.json",
     "api_url": "https://transparency-in-coverage.uhc.com/api/v1/uhc/blobs/",
-    "max_files": 10,
+    "max_files": 1000,
     "repartition": 1
 }

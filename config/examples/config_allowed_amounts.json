@@ -1,4 +1,5 @@
 {
+    "table_name": "out_of_network_allowed-amounts",
     "source":"uhc_tic",
     "file_type": "allowed_amounts",
     "filter_endswith": "_allowed-amounts.json.gz",

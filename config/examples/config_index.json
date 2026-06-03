@@ -1,4 +1,5 @@
 {
+    "table_name": "index_files",
     "source": "uhc_tic",
     "file_type": "index",
     "filter_endswith": "_index.json",

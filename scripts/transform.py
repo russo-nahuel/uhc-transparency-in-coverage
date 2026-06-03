@@ -18,7 +18,7 @@ Input:
 
 Output:
     data/processed/{source}/{file_type}/
-    └── reporting_date=2026-06-01/
+    └── partition_date=2026-06-01/
         └── part-00000.snappy.parquet
 
 Output schema (17 columns):
@@ -36,6 +36,8 @@ Notes:
     - On Windows requires winutils.exe in C:/hadoop/bin
     - On Linux/Mac no additional setup needed
     - Files with empty in_network_files are kept as null rows (explode_outer)
+    - reporting_date is duplicated as partition_date for Parquet partitioning
+      so reporting_date remains inside the Parquet file for Snowflake COPY INTO
 """
 
 import os
@@ -145,12 +147,16 @@ def flatten_df(df: DataFrame, processed_at: str) -> DataFrame:
 
 
 def save_parquet(df: DataFrame, output_dir: Path, logger: logging.Logger) -> None:
-    """Save DataFrame to Parquet partitioned by reporting_date"""
+    """Save DataFrame to Parquet partitioned by partition_date"""
     output_path = str(output_dir).replace("\\", "/")
     logger.info(f"Saving to Parquet: {output_path}")
 
+    # Duplicate reporting_date as partition_date so reporting_date stays
+    # inside the Parquet file for Snowflake COPY INTO
+    df = df.withColumn("partition_date", col("reporting_date"))
+
     df.write \
-        .partitionBy("reporting_date") \
+        .partitionBy("partition_date") \
         .mode("overwrite") \
         .parquet(output_path)
 
@@ -210,7 +216,7 @@ def main():
         df_flat = df_flat.repartition(repartition)
         logger.info(f"Repartitioned to {repartition} partition(s)")
 
-    # Save to Parquet partitioned by reporting_date
+    # Save to Parquet partitioned by partition_date
     save_parquet(df_flat, PROCESSED_DIR, logger)
 
     spark.stop()
