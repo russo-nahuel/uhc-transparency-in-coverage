@@ -1,0 +1,8 @@
+{
+    "source":"uhc_tic",
+    "file_type": "allowed_amounts",
+    "filter_endswith": "_allowed-amounts.json.gz",
+    "api_url":"https://transparency-in-coverage.uhc.com/api/v1/uhc/blobs/",
+    "max_files": 500,
+    "max_size_bytes": 50000000
+}

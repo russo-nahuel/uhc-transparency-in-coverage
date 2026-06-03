@@ -1,0 +1,8 @@
+{
+    "source":"uhc_tic",
+    "file_type": "in_network_rates",
+    "filter_endswith": "_in-network-rates.json.gz",
+    "api_url":"https://transparency-in-coverage.uhc.com/api/v1/uhc/blobs/",
+    "max_files": 10,
+    "max_size_bytes": 50000000
+}
