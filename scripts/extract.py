@@ -1,14 +1,39 @@
 """
-v1.8: Add filename sanitization
+extract.py
+UHC Transparency in Coverage — File Extractor
 
-Changes from v1.7:
-- Added sanitize_filename() function
-- Replaces spaces with underscores
-- Truncates filenames longer than 150 characters keeping the extension
+Connects to the UHC Transparency in Coverage public API and downloads
+files to the local landing zone (data/raw/).
 
-Note: On case-insensitive filesystems (Windows), 4 files may be skipped
-due to filename case conflicts (e.g. GOAT vs dba-GOAT). 
-This is a Windows-only issue; on Linux/Mac all 1000 files download correctly.
+Supports three file types configured via config/config.json:
+    - index:            table of contents files (_index.json)
+    - in_network_rates: in-network rate files (_in-network-rates.json.gz)
+    - allowed_amounts:  allowed amount files (_allowed-amounts.json.gz)
+
+Usage:
+    python scripts/extract.py
+
+Configuration (config/config.json):
+    source:           source identifier (e.g. "uhc_tic")
+    file_type:        file type to download (e.g. "index")
+    filter_endswith:  filename filter (e.g. "_index.json")
+    api_url:          UHC Transparency in Coverage API endpoint
+    max_files:        maximum number of files to download
+    max_size_bytes:   (optional) skip files larger than this size
+
+Configuration examples for each file type: config/examples/
+
+Output structure:
+    data/raw/{source}/{file_type}/{date}/
+    └── data/raw/uhc_tic/index/2026-06-01/
+        ├── 2026-06-01_company_a_index.json
+        └── 2026-06-01_company_b_index.json
+
+Notes:
+    - Resumable: skips already downloaded files
+    - Handles individual download errors without stopping
+    - On Windows, files may be skipped due to case-insensitive
+      filesystem conflicts — not an issue on Linux/Mac
 """
 
 import requests
@@ -52,7 +77,7 @@ def load_config(path: str = "config/config.json"):
     with open(path) as f:
         return json.load(f)
 
-def sanitize_filename(name: str, max_length: int = 150) -> str:
+def sanitize_filename(name: str, max_length: int = 130) -> str:
     """Replace spaces with underscores and truncate if necessary"""
     name = name.replace(" ", "_")
     if len(name) > max_length:
@@ -98,14 +123,18 @@ def filter_blobs(blobs: list, config: dict, logger: logging.Logger) -> list:
 def download_files(blobs: list, output_dir: Path, logger: logging.Logger) -> None:
     """Download files to raw output_dir, skipping already downloaded files"""
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-
     downloaded = 0
     skipped = 0
     failed = 0
 
     for blob in tqdm(blobs, desc="Downloading", unit="file", dynamic_ncols=True, file=sys.stdout):
-        file_path = output_dir / sanitize_filename(blob["name"])
+
+        # Extract date partition from filename (e.g. "2026-06-01")
+        reporting_date = blob["name"][:10]
+        file_dir = output_dir / reporting_date
+        file_dir.mkdir(parents=True, exist_ok=True)
+
+        file_path = file_dir / sanitize_filename(blob["name"])
 
         if file_path.exists():
             skipped += 1

@@ -1,0 +1,16 @@
+# Data
+data/raw/
+data/stage/
+
+# Python
+__pycache__/
+*.pyc
+.env
+
+#Data
+data/
+logs/
+
+#Local developing files
+0_config_examples
+0_history/
