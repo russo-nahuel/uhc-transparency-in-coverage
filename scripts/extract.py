@@ -101,7 +101,7 @@ def filter_blobs(blobs: list, config: dict, logger: logging.Logger) -> list:
     for blob in blobs:
         if blob["name"].endswith(config["filter_endswith"]):
             type_filtered.append(blob)
-    logger.info(f"Blobs after filter_endswith filter: {len(type_filtered)}")
+    logger.info(f"Blobs after filter_endswith filter ({config['filter_endswith']}): {len(type_filtered)}")
 
     # Filter by max_size_bytes (optional)
     max_size_bytes = config.get("max_size_bytes")
@@ -110,7 +110,7 @@ def filter_blobs(blobs: list, config: dict, logger: logging.Logger) -> list:
         for blob in type_filtered:
             if blob["size"] <= max_size_bytes:
                 size_filtered.append(blob)
-        logger.info(f"Blobs after max_size_bytes filter: {len(size_filtered)}")
+        logger.info(f"Blobs after max_size_bytes filter ({config['max_size_bytes']}): {len(size_filtered)}")
     else:
         size_filtered = type_filtered
 
