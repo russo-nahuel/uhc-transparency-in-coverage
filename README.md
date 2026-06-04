@@ -176,3 +176,13 @@ optum (database)
 - **Windows filesystem:** On case-insensitive filesystems (Windows), up to 4 files may be skipped due to filename case conflicts. This is a Windows-only issue — all files download correctly on Linux/Mac.
 - **Snowflake authentication:** Uses programmatic access token instead of password — MFA is required on this account.
 - **Load strategy:** Partition overwrite — deletes and reloads only the current `reporting_date`, preserving historical data for other periods.
+
+## Next Steps
+
+- `transform.py` flatten logic is currently hardcoded for the `index` schema. 
+  Extending to `in_network_rates` and `allowed_amounts` would require schema exploration 
+  of those file types first, followed by a dynamic flatten approach — either separate 
+  functions per file type or a generic flatten driven by a schema configuration file.
+
+- `load_snowflake.py` COPY INTO columns are currently hardcoded for the `index` schema. 
+  Parametrizing the column mapping per file type would enable the full three-ingestion pipeline.
